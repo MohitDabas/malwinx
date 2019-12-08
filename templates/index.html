@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MalwinExe</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css">
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    
+    <style>
+        #lol {
+                 background: url("{{url_for('static',filename='exe_profile.png')}}") no-repeat center center;
+                 background-size: cover;
+                 width: 200px;
+                 height: 200px;
+                     }
+    </style>
+    <script>
+      function submitFunction(){
+        var functionName=prompt("Enter the name of the function to be submitted");
+      
+      
+        $.get("http://zombietest.pythonanywhere.com/function/"+functionName, function(result){
+          alert(result);
+                   
+  
+    });
+
+      }
+
+      function checkUpdates(){
+
+        $.get("http://zombietest.pythonanywhere.com/checkupdate", function(result){
+          alert(result);
+                   
+  
+    });
+        
+      }
+
+      function searchOnIT(){
+
+        var functionTosearch=$('span[class="button is-warning"]').text().split(' on it-word.net')[0];
+        console.log("Hey from IT",functionTosearch);
+        $.get('/get_itfunc',{func:functionTosearch.replace(' ','')}).done(function(data){
+          var funcdata=$("#funcDetail");
+          funcdata.empty();
+          funcdata.append('<br/>'+data);
+        });
+
+      }
+
+
+
+
+
+
+
+
+
+      function searchOnCode(){
+        var functionTosearch=$('span[class="button is-info"]').text().split('on Code Search')[0];
+        console.log("Heyfrom Search",functionTosearch);
+        $.getJSON('https://searchcode.com/api/codesearch_I/?q='+functionTosearch.replace(' ','')+'&lan=16&lan=28', function (data) {
+                              var funcdata=$("#funcDetail");
+                              funcdata.empty();
+                             
+                              for(i=0;i<=data['results'].length;i++){
+                                try
+                                {
+                                console.log(data['results'][i]['repo']);
+                                funcdata.append(`<span class="tag is-black"><a href="${data['results'][i]['url']}">${data['results'][i]['url']}</a></span> <br/>`);
+                                var codeToPrint='';
+                                for ( code in Object.values(data['results'][i]['lines'])){
+                                 
+                                     codeToPrint+= Object.values(data['results'][i]['lines'])[code]+'<br/>'
+                                   
+                                  } 
+                                funcdata.append('<div class="box"><pre class="language-javascript"><code class="language-javascript">'+codeToPrint+'</code></pre></div>');   
+                             
+                                
+                                
+                               // console.log(data['results'][i]['url']);
+                               // console.log(data['results'][i]['lines']);
+                                }
+                                catch(e){
+                                     console.log('Catching Error',e);
+                                }
+                              }
+
+                        });
+      }
+
+      function getfunk(functionName){
+     
+        $('span[class="button is-info"]').text(functionName+' on Code Search');
+        $('span[class="button is-warning"]').text(functionName+' on it-word.net');
+        $.getJSON('https://searchcode.com/api/codesearch_I/?q=URLDownloadToFile&lan=16&lan=28', function (data) {
+      console.log(data);
+    });
+
+      
+        $.get("/get_function_desc",{func:functionName}).done(function(data){
+          var funcdata=$("#funcDetail");
+          funcdata.empty();
+          console.log(data);
+          for (inD in data){
+             if (inD==='arguments')
+             {
+              funcdata.append(`<span class="tag is-black">${inD}</span> <br/>`);
+              funcdata.append(`<div class="box">
+              <article class="media">
+              <div class="media-content">
+              <div class="content">
+              <p>
+                ${data[inD][0]['type']}  ${data[inD][0]['name']}
+              </p>
+                
+             </div>
+             </div>
+            </article>
+            </div>`);
+          }
+          else{
+
+              funcdata.append(`<span class="tag is-black">${inD}</span> <br/>`);
+              funcdata.append(`<div class="box">
+              <article class="media">
+              <div class="media-content">
+              <div class="content">
+              <p>
+                ${data[inD]} 
+              </p>
+                
+             </div>
+             </div>
+            </article>
+            </div>`);
+
+          }
+        }
+        });
+      }
+  
+      $(function(){
+
+      
+
+
+
+        $("#upload_button").on('click',function(){
+          var deletePreviousData=$('#importData');
+          deletePreviousData.empty();
+          var form=$("#exeFile")[0];
+          var formDataToSend=new FormData(form);
+          console.log(formDataToSend);
+          $.ajax({
+                  url:'upload_exe',
+                  type:'POST',
+                  data:formDataToSend,
+                  success:function(data){
+                    console.log(data);
+                    var importDataElement=$('#importData');
+                    for (lib in data){
+                      importDataElement.append(`<br/><br/><a class="button is-danger">
+                    ${lib}
+                  </a><br/><br/>`);
+                      for (func in data[lib] ){
+                        //  console.log(Object.keys(data[lib][func]),Object.values(data[lib][func]));
+                          for (i=0;i<=Object.keys(data[lib][func]).length;i++){
+                            if (typeof Object.keys(data[lib][func])[i]!=='undefined'){
+                             console.log(Object.keys(data[lib][func])[i]);
+                             importDataElement.append(`  <a class="button" id="functionName" onclick=getfunk('${Object.keys(data[lib][func])[i]}');>${Object.keys(data[lib][func])[i]}</a>`);}
+                          }
+
+                      }
+                    }
+
+                  },
+                  cache:false,
+                  contentType:false,
+                  processData:false
+          });
+        });
+      
+      });
+     
+    
+     
+    </script>  
+    
+
+
+
+
+
+
+
+
+
+  </head>
+  <body>
+
+
+        <nav class="navbar" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+          <a class="navbar-item" href="/">
+            <img src="{{url_for('static',filename='exe_profile.png')}}" id="lol">
+          </a>
+      
+          <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+          </a>
+        </div>
+      
+        <div id="navbarBasicExample" class="navbar-menu">
+          <div class="navbar-start">
+            <a class="navbar-item" href="/">
+              Home
+            </a>
+      
+            <a class="navbar-item" onclick="checkUpdates()">
+               Check Updates
+            </a>
+
+            <a class="navbar-item" onclick="submitFunction()">
+                   Didnt find your function click here
+                  </a>
+            <a class="navbar-item">
+                      Version 1.0
+                     </a>      
+      
+            
+          </div>
+      
+          <div class="navbar-end">
+            <div class="navbar-item">
+              <div class="buttons">
+                    <a class="button" href="https://github.com/MohitDabas/malwinx">
+                            <span class="icon">
+                              <i class="fab fa-github"></i>
+                            </span>
+                            <span>GitHub</span>
+                          </a>
+               
+              </div>
+            </div>
+          </div>
+        </div>
+    </nav>
+
+    
+
+
+    <div class="columns">
+               
+            <div class="column is-half">
+              <div class="box">
+                <p class="title is-5">Upload</p>
+                <form id="exeFile" enctype="multipart/form-data" name="exeFile">
+                <label class="file-label">
+                    <input class="file-input" type="file" name="resume">
+                    <span class="file-cta">
+                      <span class="file-icon">
+                        <i class="fas fa-upload"></i>
+                      </span>
+                      <span class="file-label">
+                        Choose an exe or dll file…
+                      </span>
+                    </span>
+                  </label>
+                  </form>
+                  <br/><br/>
+                <a class="button" id ="upload_button">Upload File</a><br/><br/>
+                <p class="title is-5">Imported Library Function</p>
+                <div id="importData">
+               
+              </div>
+              
+              </div>
+            </div>
+            
+            <div class="column is-half">
+                    <div class="box">
+                      <p class="title is-5">Function Profiler</p> 
+                      <span class="button is-info" onclick="searchOnCode();"></span>
+                      <span class="button is-warning" onclick="searchOnIT();"></span>
+                      <div id="funcDetail">
+
+                      </div>                   
+                     
+                     
+                    </div>
+                  </div>
+
+          </div>
+
+
+</body>
+</html>  
