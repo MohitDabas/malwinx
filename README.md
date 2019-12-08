@@ -34,15 +34,15 @@ I have started this project to get a quick reference on win32api by integrating 
 
 2. The function of exe and dll will appear.
 
-![alt_text](https://i.ibb.co/qnq2Hj3/Picture2.png)
+![alt_text](https://i.ibb.co/j50jCfP/Picture2.png)
 
 3. We need to just click any of the function. For example, purpose lets choose LoadLibraryA.
 
-![alt_text](https://i.ibb.co/9ZtQ2zg/Picture3.png)
+![alt_text](https://i.ibb.co/dmg861M/Picture3.png)
 
 4. The code usage of any function can be extracted by clicking on these options.
 
-![alt_text](https://i.ibb.co/BBGtfzF/Picture4.png)
+![alt_text](https://i.ibb.co/jDzT86s/Picture4.png)
 
 
 ![alt_text](https://i.ibb.co/gdXTSHM/Picture5.png)
